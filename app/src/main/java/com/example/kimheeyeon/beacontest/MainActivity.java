@@ -16,6 +16,7 @@ import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
+import org.altbeacon.beacon.distance.DistanceCalculator;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ public class MainActivity extends Activity implements BeaconConsumer {
         // type.  Do a web search for "setBeaconLayout" to get the proper expression.
         beaconManager.getBeaconParsers().add(new BeaconParser().
                 setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:23-24"));
+        //위 숫자가 detect 숫자. 바꾸면 인식안됨
         beaconManager.bind(this);
     }
     @Override
@@ -114,12 +116,49 @@ public class MainActivity extends Activity implements BeaconConsumer {
 
             //비콘의 아이디와 거리를 측정하여 textvIEW에 띄움
             for(Beacon beacon : beaconList){
+
+                Double accuracy = calculateDistance(beacon.getTxPower(),beacon.getRssi());
+
                //Log.d("beacon ID2", beacon.getId2());
-               Log.d("Distance " , String.format("%.3f", beacon.getDistance()));
-               textView.append("ID : " + beacon.getId2() + " / " + String.format("%.3f", beacon.getDistance()) + "m\n");
+               System.out.println("name : " + beacon.getBluetoothName() + " / " +
+                       "ID2 : " + beacon.getId2() + " / " + String.valueOf(beacon.getDistance()));
+               textView.append("name : " + beacon.getBluetoothName() + " / " +
+                       "ID2 : " + beacon.getId2() + " / " + String.valueOf(accuracy) + "/" + "Accracy : " + getDistance(accuracy) + "m\n" );
+
             }
+
 
             handler.sendEmptyMessageDelayed(0,1000);
         }
     };
+
+    public double calculateDistance(int txPower, double rssi) {
+        if (rssi == 0) {
+            return -1.0; // if we cannot determine accuracy, return -1.
+        }
+        double ratio = rssi*1.0/txPower;
+
+        Log.d("ratio " , String.valueOf(ratio));
+
+        if (ratio < 1.0) {
+            Log.d("pow!! " , String.valueOf(Math.pow(ratio,10)));
+            return Math.pow(ratio,10);
+        }
+        else {
+            double accuracy =  (0.89976)*Math.pow(ratio,7.7095) + 0.111;
+            return accuracy;
+        }
+    }
+
+    private String getDistance(double accuracy) {
+        if (accuracy == -1.0) {
+            return "Unknown";
+        } else if (accuracy < 1) {
+            return "Immediate";
+        } else if (accuracy < 3) {
+            return "Near";
+        } else {
+            return "Far";
+        }
+    }
 }
