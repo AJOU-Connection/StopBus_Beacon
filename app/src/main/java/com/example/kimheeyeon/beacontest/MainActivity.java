@@ -1,6 +1,7 @@
 package com.example.kimheeyeon.beacontest;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -23,6 +24,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+
+
+
 public class MainActivity extends Activity implements BeaconConsumer {
     protected static final String TAG = "MonitoringActivity";
     private BeaconManager beaconManager;
@@ -38,6 +42,15 @@ public class MainActivity extends Activity implements BeaconConsumer {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        try {
+            Intent intent = new Intent(MainActivity.this, Speach.class);
+
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         //비콘매니저 객체 초기화
         beaconManager = BeaconManager.getInstanceForApplication(this);
