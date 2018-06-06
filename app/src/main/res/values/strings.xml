@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">BeaconTest</string>
+    <string name="app_name">StopBusBeacon</string>
+
+    <string name="yes_text">예</string>
+    <string name="no_text">아니오</string>
+    <string name="exit_title">종료</string>
+    <string name="exit_content">종료 하시겠습니까?</string>
 </resources>
