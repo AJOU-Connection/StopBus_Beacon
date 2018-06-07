@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.minew.beacon.BeaconValueIndex;
 import com.minew.beacon.BluetoothState;
 import com.minew.beacon.MinewBeacon;
@@ -15,7 +16,6 @@ import com.minew.beacon.MinewBeaconManagerListener;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity{
     protected static final String TAG = "mjin1220";
@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity{
                     if(name.equals("N/A"))
                         continue;
 
-                    Log.d(TAG, "result: " + mRssiMap.containsKey(name) + "");
                     rssi = minewBeacons.get(i).getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_RSSI).getFloatValue();
                     if(!mRssiMap.containsKey(name)) {
                         mRssiMap.put(name, new KalmanFilter(0.0f));
@@ -84,24 +83,6 @@ public class MainActivity extends AppCompatActivity{
                             + "Distance : " + calculateDistance(rssi)+ "\n");
                     textView.append("\n");
                 }
-
-//                for(MinewBeacon beacon: minewBeacons){
-//                    if(beacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_Name).getStringValue().equals("N/A"))
-//                        continue;
-//                    textView.append("NAME : " + beacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_Name).getStringValue() + "\n"
-//                            + "Humidity : " + beacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_Humidity).getStringValue() + "\n"
-//                            + "BatteryLevel : " + beacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_BatteryLevel).getStringValue() + "\n"
-//                            + "InRage : " + beacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_InRage).getStringValue() + "\n"
-//                            + "MAC : " + beacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_MAC).getStringValue() + "\n"
-//                            + "Major : " + beacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_Major).getStringValue() + "\n"
-//                            + "Minor : " + beacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_Minor).getStringValue() + "\n"
-//                            + "Temperature : " + beacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_Temperature).getStringValue() + "\n"
-//                            + "TxPower : " + beacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_TxPower).getStringValue() + "\n"
-//                            + "UUID : " + beacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_UUID).getStringValue() + "\n"
-//                            + "RSSI : " + beacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_RSSI).getStringValue() + "\n"
-//                            + "Distance : " + calculateDistance(beacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_RSSI).getFloatValue())+ "\n");
-//                    textView.append("\n");
-//                }
             }
         });
 
@@ -114,8 +95,13 @@ public class MainActivity extends AppCompatActivity{
         mMinewBeaconManager.stopScan();
     }
 
-    public void OnButtonClicked(View view){
+    public void OnClearClicked(View view){
         textView.setText("");
+    }
+
+    public void OnMapClicked(View view){
+        GoogleMapDialog dialog = GoogleMapDialog.newInstance("아주대.아주대학교병원", new LatLng(37.2785,127.0436));
+        dialog.show(getSupportFragmentManager(), "dialog");
     }
 
     public double calculateDistance(double rssi) {
@@ -132,18 +118,6 @@ public class MainActivity extends AppCompatActivity{
         else {
             double accuracy =  (0.89976)*Math.pow(ratio,7.7095) + 0.111;
             return accuracy;
-        }
-    }
-
-    private String getDistance(double accuracy) {
-        if (accuracy == -1.0) {
-            return "Unknown";
-        } else if (accuracy < 1) {
-            return "Immediate";
-        } else if (accuracy < 3) {
-            return "Near";
-        } else {
-            return "Far";
         }
     }
 }
